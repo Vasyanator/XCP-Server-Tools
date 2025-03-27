@@ -104,7 +104,7 @@ class SubstatsInterface:
         clear_button = tk.Button(buttons_frame2, text=self.localization['Clear_All'], command=self.clear_additional_stats)
         clear_button.pack(side=tk.LEFT, padx=5)
 
-        # Bind selection event for the listbox
+        # Bind selection event for the additional stats listbox
         self.additional_stats_listbox.bind('<<ListboxSelect>>', self.on_stat_select)
 
         # Prioritized Stats Section
@@ -114,6 +114,8 @@ class SubstatsInterface:
         priority_label.pack()
         self.priority_listbox = tk.Listbox(priority_stats_frame, width=30, height=10)
         self.priority_listbox.pack()
+        # Bind selection event for the priority listbox
+        self.priority_listbox.bind('<<ListboxSelect>>', self.on_priority_stat_select)
         buttons_frame3 = tk.Frame(priority_stats_frame)
         buttons_frame3.pack(pady=5)
         remove_priority_button = tk.Button(buttons_frame3, text=self.localization['Remove_Selected'], command=self.remove_prioritized_stat)
@@ -130,11 +132,6 @@ class SubstatsInterface:
             self.maxsteps_var = tk.BooleanVar()
             maxsteps_check = tk.Checkbutton(substats_main_frame, text=self.localization['Include_-maxsteps'], variable=self.maxsteps_var, command=self.update_command_callback)
             maxsteps_check.pack()
-            #self.additional_levels_var = tk.BooleanVar()
-            #self.additional_levels_var.set(True)
-            #levels_check = tk.Checkbutton(self.parent_frame, text=self.localization['Levels_of_additional_stats'], variable=self.additional_levels_var, command=self.on_additional_levels_toggle)
-            #levels_check.pack()
-
 
     def on_priority_stat_select(self, event):
         selected_indices = self.priority_listbox.curselection()
@@ -147,16 +144,12 @@ class SubstatsInterface:
             self.priority_var.set(data.get('priority', 1))
             if self.server_type == 'LunarCore':
                 level_index = data.get('level_index', 0)
-                if level_index is not None:
-                    self.additional_level_index_var.set(level_index)
-            # Enable the Update Selected button
+                self.additional_level_index_var.set(level_index)
+            # Очистка выделения в дополнительном списке, чтобы фокус был однозначным
+            self.additional_stats_listbox.selection_clear(0, tk.END)
             self.update_button.config(state='normal')
-            # Indicate that we're updating a priority stat
-            self.is_updating_priority = True
         else:
-            # Disable the Update Selected button
             self.update_button.config(state='disabled')
-            self.is_updating_priority = False
 
     def update_level_options(self, *args):
         if self.server_type != 'LunarCore':
@@ -187,9 +180,14 @@ class SubstatsInterface:
 
     def add_to_priority_list(self):
         stat_name = self.additional_stats_var.get()
-        priority = self.priority_var.get()
-        if not stat_name or not isinstance(priority, int):
+        try:
+            priority = int(self.priority_var.get())
+        except ValueError:
             messagebox.showwarning('Invalid Input', 'Please select a valid stat and enter a priority.')
+            return
+
+        if not stat_name:
+            messagebox.showwarning('Invalid Input', 'Please select a valid stat.')
             return
 
         # For LunarCore, level might be important
@@ -433,17 +431,16 @@ class SubstatsInterface:
             elif self.server_type == 'DanhengServer':
                 qty = self.additional_stats[stat_name]
                 self.additional_quantity_var.set(str(qty))
-            # Disable priority_var since it's not used for regular substats
             self.priority_var.set(1)
-            # Enable the Update Selected button
+            # Очищаем выделение в priority_listbox, чтобы выбор был однозначным
+            self.priority_listbox.selection_clear(0, tk.END)
             self.update_button.config(state='normal')
         else:
-            # Disable the Update Selected button
             self.update_button.config(state='disabled')
 
     def update_selected_stat(self):
-        if self.is_updating_priority:
-            # Update the selected stat in the priority list
+        # Если выделен элемент в priority_listbox – обновляем приоритетный стат
+        if self.priority_listbox.curselection():
             selected_indices = self.priority_listbox.curselection()
             if selected_indices:
                 index = selected_indices[0]
@@ -451,32 +448,36 @@ class SubstatsInterface:
                 old_stat_name = stat_entry.split(' (Priority:')[0]
 
                 new_stat_name = self.additional_stats_var.get()
-                priority = self.priority_var.get()
-                if not new_stat_name or not isinstance(priority, int):
+                try:
+                    priority = int(self.priority_var.get())
+                except ValueError:
                     messagebox.showwarning('Invalid Input', 'Please select a valid stat and enter a priority.')
                     return
 
-                # For LunarCore, level might be important
+                if not new_stat_name:
+                    messagebox.showwarning('Invalid Input', 'Please select a valid stat.')
+                    return
+
                 if self.server_type == 'LunarCore':
                     if self.additional_levels_var.get():
                         level_index = self.additional_level_index_var.get()
                     else:
                         level_index = None
-                    # Update the prioritized_stats dictionary
-                    del self.prioritized_stats[old_stat_name]
+                    if old_stat_name in self.prioritized_stats:
+                        del self.prioritized_stats[old_stat_name]
                     self.prioritized_stats[new_stat_name] = {'priority': priority, 'level_index': level_index}
                 else:
-                    del self.prioritized_stats[old_stat_name]
+                    if old_stat_name in self.prioritized_stats:
+                        del self.prioritized_stats[old_stat_name]
                     self.prioritized_stats[new_stat_name] = {'priority': priority}
 
                 self.update_priority_listbox()
-                # Reset updating flag
-                self.is_updating_priority = False
-                # Clear selection
                 self.priority_listbox.selection_clear(0, tk.END)
-        else:
-            # Existing code for updating additional_stats
+        # Если выделен элемент в additional_stats_listbox – обновляем его
+        elif self.additional_stats_listbox.curselection():
             self.update_selected_substat()
+        else:
+            messagebox.showwarning('No Selection', 'Please select a stat to update.')
 
     def update_selected_substat(self):
         selected_indices = self.additional_stats_listbox.curselection()
@@ -502,12 +503,13 @@ class SubstatsInterface:
                         return
                 else:
                     level_index = None
-                    level_value = None
                 # Update the additional_stats dictionary
-                del self.additional_stats[stat_name]
+                if stat_name in self.additional_stats:
+                    del self.additional_stats[stat_name]
                 self.additional_stats[new_stat_name] = (quantity, level_index)
             elif self.server_type == 'DanhengServer':
-                del self.additional_stats[stat_name]
+                if stat_name in self.additional_stats:
+                    del self.additional_stats[stat_name]
                 self.additional_stats[new_stat_name] = quantity
 
             self.update_additional_stats_listbox()
@@ -515,17 +517,3 @@ class SubstatsInterface:
             self.update_command_callback()
         else:
             messagebox.showwarning('No Selection', 'Please select a stat to update.')
-
-    def update_improvement_points(self):
-        # Calculate improvement points
-        total_quantity = 0
-        num_stats = len(self.additional_stats)
-        if self.server_type == 'LunarCore':
-            for qty, _ in self.additional_stats.values():
-                total_quantity += qty
-        elif self.server_type == 'DanhengServer':
-            for qty in self.additional_stats.values():
-                total_quantity += qty
-        improvement_points = total_quantity - num_stats
-        self.improvement_points_label.config(text=self.localization['Improvement_points:'] + f' {improvement_points}')
-
