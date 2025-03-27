@@ -1,4 +1,3 @@
-#virtual_universe_blessings.py
 import tkinter as tk
 from tkinter import ttk, VERTICAL, RIGHT, LEFT, Y, StringVar, messagebox
 
@@ -46,7 +45,9 @@ class VirtualUniverseBlessingsTab:
             '',  # Empty string for 'All' categories
             'basic su',
             'divergent su',
+            'divergent su: PH',
             'equations',
+            'Golden Blood',
             'infinite blessings',
             'resonance deployments',
             'unknown'
@@ -63,14 +64,15 @@ class VirtualUniverseBlessingsTab:
         types = [
             '',  # Empty string for 'All' types
             'Preservation',
-            'Memory',
-            'Nonexistence',
+            'Remembrance',
+            'Nihility',
             'Abundance',
-            'Hunting',
+            'The Hunt',
             'Destruction',
-            'Joy',
-            'Spreading',
+            'Elation',
+            'Propagation',
             'Erudition',
+            'Harmony',
             'Unknown'
         ]
         type_options = [self.localization.get(t, t) for t in types]
@@ -146,21 +148,24 @@ class VirtualUniverseBlessingsTab:
         category_map = {
             self.localization.get('basic su', 'basic su'): 'basic su',
             self.localization.get('divergent su', 'divergent su'): 'divergent su',
+            self.localization.get('divergent su: PH', 'divergent su: PH'): 'divergent su: PH',
             self.localization.get('equations', 'equations'): 'equations',
+            self.localization.get('Golden Blood', 'Golden Blood'): 'Golden Blood',
             self.localization.get('infinite blessings', 'infinite blessings'): 'infinite blessings',
             self.localization.get('resonance deployments', 'resonance deployments'): 'resonance deployments',
             self.localization.get('unknown', 'unknown'): 'unknown'
         }
         type_map = {
             self.localization.get('Preservation', 'Preservation'): 'Preservation',
-            self.localization.get('Memory', 'Memory'): 'Memory',
-            self.localization.get('Nonexistence', 'Nonexistence'): 'Nonexistence',
+            self.localization.get('Remembrance', 'Remembrance'): 'Remembrance',
+            self.localization.get('Nihility', 'Nihility'): 'Nihility',
             self.localization.get('Abundance', 'Abundance'): 'Abundance',
-            self.localization.get('Hunting', 'Hunting'): 'Hunting',
+            self.localization.get('The Hunt', 'The Hunt'): 'The Hunt',
             self.localization.get('Destruction', 'Destruction'): 'Destruction',
-            self.localization.get('Joy', 'Joy'): 'Joy',
-            self.localization.get('Spreading', 'Spreading'): 'Spreading',
+            self.localization.get('Elation', 'Elation'): 'Elation',
+            self.localization.get('Propagation', 'Propagation'): 'Propagation',
             self.localization.get('Erudition', 'Erudition'): 'Erudition',
+            self.localization.get('Harmony', 'Harmony'): 'Harmony',
             self.localization.get('Unknown', 'Unknown'): 'Unknown'
         }
         rarity_map = {
@@ -176,9 +181,10 @@ class VirtualUniverseBlessingsTab:
         selected_type_internal = type_map.get(selected_type, '')
         selected_rarity_internal = rarity_map.get(selected_rarity, '')
 
-        # Populate the listbox
+        # Populate the listbox, добавляем отображение категории и типа
         for buff in self.rogue_buffs_su:
-            display_text = f"{buff.name} ({buff.id})"
+            # Форматируем строку так, чтобы были видны имя, ID, категория и тип
+            display_text = f"{buff.name} ({buff.id}) - {buff.category or '—'} - {buff.buff_type or '—'}"
             if search_text and search_text not in buff.name.lower():
                 continue
             if selected_category_internal and buff.category != selected_category_internal:
@@ -197,6 +203,7 @@ class VirtualUniverseBlessingsTab:
         if selected_indices:
             index = selected_indices[0]
             selected_blessing = self.blessings_listbox.get(index)
+            # Предполагаем, что ID находится в скобках
             if '(' in selected_blessing and ')' in selected_blessing:
                 id_str = selected_blessing.split('(')[-1].split(')')[0]
                 self.selected_blessing_id = id_str
@@ -207,21 +214,17 @@ class VirtualUniverseBlessingsTab:
 
     def execute_get_blessing(self):
         target_id = self.selected_blessing_id
-
         if not target_id:
             messagebox.showwarning(self.localization["Warning"], self.localization["No_blessing_selected"])
             return
-
         get_command = f"/rogue buff {target_id}"
         self.command_manager.update_command(get_command)
 
     def execute_enhance_selected(self):
         target_id = self.selected_blessing_id
-
         if not target_id:
             messagebox.showwarning(self.localization["Warning"], self.localization["No_blessing_selected"])
             return
-
         enhance_command = f"/rogue enhance {target_id}"
         self.command_manager.update_command(enhance_command)
 
