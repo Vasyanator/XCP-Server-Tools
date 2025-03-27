@@ -10,7 +10,7 @@ from process_handbook import process_handbook, identify_handbook
 from settings import SettingsWindow, get_path # Import the SettingsWindow class
 
 program_name = "HSR server Tools"
-program_version = "1.1"
+program_version = "1.3"
 settings_file = 'settings.json'
 
 def load_settings():
@@ -56,19 +56,21 @@ def load_localization(language_code):
     merged_localization = merge_localizations(default_localization, localization)
     return merged_localization
 
-def create_tabs(notebook, command_manager, server_type, data, localization):
+def create_tabs(notebook, command_manager, server_type, data, localization, settings, settings_file):
     main_locale = localization['main']
     tabs = []
 
     if server_type == 'LunarCore':
         # Import necessary modules
         import tab_planars_gen.main as tab_planars_gen
+        #import tab_prepared_relics
         import tab_items
         import tab_spawn
-        import tab_mazes
-        import tab_avatars
-        import tab_commands
+        import tab_mazes_LC
+        import tab_avatars_LC
+        import tab_commands_LC
         import tab_opencommand
+        import tab_server
 
         # Unpack data
         avatars_list = data['avatars_list']
@@ -89,6 +91,18 @@ def create_tabs(notebook, command_manager, server_type, data, localization):
         planars_tab = tab_planars_gen.PlanarsTab(notebook, relics_list, command_manager, localization['planars_tab'], server_type)
         notebook.add(planars_tab.frame, text=main_locale['tab_relic_generation'])
         tabs.append(planars_tab)
+
+        #Best Relics Tab
+        # best_relics_tab = tab_prepared_relics.PreparedRelicsTab(
+        #     notebook,
+        #     avatars_list,
+        #     relics_list,
+        #     other_items_list,
+        #     localization=localization.get('outfits_tab', {}),
+        #     stats_localization=localization['planars_tab']['Stats']
+        # )
+        # notebook.add(best_relics_tab.frame, text=main_locale.get('tab_outfits', 'Outfits'))
+        # tabs.append(best_relics_tab)
 
         # Items Tab
         items_tab = tab_items.ItemsTab(
@@ -120,17 +134,17 @@ def create_tabs(notebook, command_manager, server_type, data, localization):
         tabs.append(spawn_tab)
 
         # Mazes Tab
-        mazes_tab = tab_mazes.MazesTab(notebook, mazes_list, command_manager, localization['mazes_tab'])
+        mazes_tab = tab_mazes_LC.MazesTab(notebook, mazes_list, command_manager, localization['mazes_tab'])
         notebook.add(mazes_tab.frame, text=main_locale['tab_mazes'])
         tabs.append(mazes_tab)
 
         # Avatars Tab
-        avatars_tab = tab_avatars.AvatarsTab(notebook, avatars_list, command_manager, localization['avatars_tab'], server_type)
+        avatars_tab = tab_avatars_LC.AvatarsTab(notebook, avatars_list, command_manager, localization['avatars_tab'])
         notebook.add(avatars_tab.frame, text=main_locale['tab_avatars'])
         tabs.append(avatars_tab)
 
         # Commands Tab
-        commands_tab = tab_commands.CommandsTab(notebook, command_manager=command_manager, localization=localization['commands_tab'], server_type=server_type)
+        commands_tab = tab_commands_LC.CommandsTab(notebook, command_manager=command_manager, localization=localization['commands_tab_LC'], server_type=server_type)
         notebook.add(commands_tab.frame, text=main_locale['tab_commands'])
         tabs.append(commands_tab)
 
@@ -139,13 +153,29 @@ def create_tabs(notebook, command_manager, server_type, data, localization):
         notebook.add(opencommand_tab.frame, text=main_locale['tab_opencommand_plugin'])
         tabs.append(opencommand_tab)
 
+        # Server tab
+        server_tab = tab_server.ServerTab(
+            notebook, 
+            command_manager, 
+            localization['server_tab'], 
+            server_type, 
+            settings,          # Pass the current settings
+            settings_file      # Pass the settings file path
+        )
+        notebook.add(server_tab.frame, text=main_locale['tab_server'])
+        tabs.append(server_tab)
+
     elif server_type == 'DanhengServer':
         # Import necessary modules
         import tab_planars_gen.main as tab_planars_gen
+        # import tab_prepared_relics
         import tab_items
-        import tab_avatars
+        import tab_avatars_DH
         import tab_rogue_buffs.main as rogue_buffs_main
         import tab_opencommand
+        import tab_command_DH
+        import tab_banner_editor
+        # import tab_server
 
         # Unpack data
         avatars_list = data['avatars_list']
@@ -168,6 +198,20 @@ def create_tabs(notebook, command_manager, server_type, data, localization):
         planars_tab = tab_planars_gen.PlanarsTab(notebook, relics_list, command_manager, localization['planars_tab'], server_type)
         notebook.add(planars_tab.frame, text=main_locale['tab_relic_generation'])
         tabs.append(planars_tab)
+
+        #Best Relics Tab
+        # best_relics_tab = tab_prepared_relics.PreparedRelicsTab(
+        #     notebook,
+        #     avatars_list,
+        #     relics_list,
+        #     other_items_list,
+        #     localization=localization.get('outfits_tab', {}),
+        #     stats_localization=localization['planars_tab']['Stats']
+        # )
+        # notebook.add(best_relics_tab.frame, text=main_locale.get('tab_outfits', 'Outfits'))
+        # tabs.append(best_relics_tab)
+
+        # print(localization['planars_tab']['Stats'])
 
         # Items Tab
         items_tab = tab_items.ItemsTab(
@@ -202,14 +246,37 @@ def create_tabs(notebook, command_manager, server_type, data, localization):
         tabs.append(rogue_tab)
 
         # Avatars Tab
-        avatars_tab = tab_avatars.AvatarsTab(notebook, avatars_list, command_manager, localization['avatars_tab'], server_type)
+        avatars_tab = tab_avatars_DH.AvatarsTab(notebook, avatars_list, command_manager, localization['avatars_tab'])
         notebook.add(avatars_tab.frame, text=main_locale['tab_avatars'])
         tabs.append(avatars_tab)
+
+        command_tab = tab_command_DH.CommandTab(notebook, command_manager, localization['command_tab_DH'], server_type)
+        # Здесь можно использовать, например, ключ 'tab_command' из локализации, если он есть,
+        # либо задать текст напрямую
+        notebook.add(command_tab.frame, text=main_locale.get('tab_commands', "Commands"))
+        tabs.append(command_tab)
+
+        banner_editor_tab = tab_banner_editor.BannerEditorTab(notebook, lightcones_list, avatars_list, localization['banner_editor'])
+        notebook.add(banner_editor_tab.frame, text=main_locale.get('tab_banner_editor', "Редактор баннеров"))
+        tabs.append(banner_editor_tab)
 
         # OpenCommand Tab
         opencommand_tab = tab_opencommand.OpenCommandTab(notebook, localization=localization['opencommand_tab'])
         notebook.add(opencommand_tab.frame, text=main_locale['tab_opencommand_plugin'])
         tabs.append(opencommand_tab)
+
+        # Server tab (if applicable for DanhengServer)
+        # server_tab = tab_server.ServerTab(
+        #     notebook, 
+        #     command_manager, 
+        #     localization['server_tab'], 
+        #     server_type, 
+        #     settings,          # Pass the current settings
+        #     settings_file      # Pass the settings file path
+        # )
+        # notebook.add(server_tab.frame, text=main_locale['tab_server'])
+        # tabs.append(server_tab)
+
 
     return tabs
 
@@ -251,7 +318,7 @@ def main():
 class Application:
     def __init__(self, root):
         self.root = root
-        self.root.protocol("WM_DELETE_WINDOW", self.root.quit)
+        self.root.protocol("WM_DELETE_WINDOW", self.on_close)
         self.settings_file = settings_file
         self.initialize_app()
 
@@ -327,7 +394,21 @@ class Application:
         data = handbook_data.get_data()
 
         # Create and add tabs based on server_type
-        self.tabs = create_tabs(self.notebook, self.command_manager, self.server_type, data, self.localization)
+        self.tabs = create_tabs(
+            self.notebook, 
+            self.command_manager, 
+            self.server_type, 
+            data, 
+            self.localization, 
+            self.settings,
+            self.settings_file
+        )
+
+
+        # Get the server tab instance (always the last tab)
+        server_tab = self.tabs[-1]
+        # Pass the server_tab reference to the command manager
+        self.command_manager.set_server_tab(server_tab)
 
         # Command Entry and copy button
         command_frame = tk.Frame(self.root)
@@ -344,6 +425,14 @@ class Application:
         copy_button = tk.Button(command_frame, text=self.main_locale['copy_button_label'], command=self.command_manager.copy_to_clipboard)
         copy_button.pack()
 
+         # After creating and adding the Copy button:
+        self.execute_button = tk.Button(command_frame, text=self.main_locale['execute_button_label'], command=self.execute_command, state=tk.DISABLED)
+        self.execute_button.pack()
+        self.command_manager.set_execute_button(self.execute_button)
+
+        # Bind F5 key to execute command
+        self.root.bind('<F5>', lambda event: self.execute_command())
+
     def open_settings(self):
         self.root.withdraw()  # Hide the main window
         settings_window = SettingsWindow(self.root, settings_file=self.settings_file)
@@ -357,12 +446,69 @@ class Application:
         # Reload settings and reinitialize the application
         self.initialize_app()
 
+    def execute_command(self):
+        self.command_manager.execute_command()
+
+    def on_close(self):
+        # Assuming self.tabs were created and the last one is the server tab
+        if hasattr(self, 'tabs') and self.tabs:
+            if self.server_type == "LunarCore":
+                server_tab = self.tabs[-1]
+                if server_tab.running:
+                    server_tab.stop_server()
+        self.root.quit()
+
 class CommandManager:
     def __init__(self, root, give_command_var, autocopy_var, localization):
         self.root = root
         self.give_command = give_command_var
         self.autocopy_var = autocopy_var
         self.localization = localization
+        self.server_tab = None
+        self.execute_button = None  # Will be set by Application after button creation
+
+    def set_server_tab(self, server_tab):
+        self.server_tab = server_tab
+        # The Application sets this after the execute button is created
+        # We'll need a reference to that button too.
+        # We'll do that by searching for the Application’s execute_button dynamically:
+        # (Alternatively, the Application can call a setter on CommandManager after button creation.)
+        app = self.root  # Tk root is the parent of Application
+        # Assuming the Application stored execute_button in self.execute_button:
+        for child in app.winfo_children():
+            # Searching for the command_frame to find execute_button is complicated,
+            # Instead, let’s assume Application calls self.command_manager.execute_button = self.execute_button after creation
+            pass
+
+    def set_execute_button(self, button):
+        self.execute_button = button
+
+    def execute_command(self):
+        if not self.server_tab or not self.server_tab.running:
+            return
+        cmd = self.give_command.get().strip()
+        if not cmd:
+            return
+        # Remove leading '/'
+        if cmd.startswith('/'):
+            cmd = cmd[1:]
+        # Add "@<uid>" after first word
+        parts = cmd.split(' ', 1)
+        uid = self.server_tab.uid_var.get().strip()
+        if uid:
+            if len(parts) > 1:
+                modified_cmd = parts[0] + ' @' + uid + ' ' + parts[1]
+            else:
+                modified_cmd = parts[0] + ' @' + uid
+        else:
+            # If no UID provided, just use the original cmd (without '/')
+            modified_cmd = cmd
+
+        self.server_tab.send_command_to_server(modified_cmd)
+
+    def set_server_state(self, running):
+        if self.execute_button:
+            self.execute_button.config(state=tk.NORMAL if running else tk.DISABLED)
 
     def update_command(self, command):
         self.give_command.set(command)
