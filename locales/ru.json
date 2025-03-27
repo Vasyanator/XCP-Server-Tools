@@ -37,19 +37,21 @@
         "No_blessing_selected": "Благословение не выбрано",
         "basic su": "Виртуальная вселенная",
         "divergent su": "Расходящаяся вселенная",
+        "divergent su: PH": "Расходящаяся вселенная: Тысячеликий герой",
         "equations": "Уравнения",
         "infinite blessings": "Бесконечные благословения",
         "resonance deployments": "Развертывания резонанса",
         "unknown": "Unknown",
         "Preservation": "Сохранение",
-        "Memory": "Память",
-        "Nonexistence": "Небытие",
+        "Remembrance": "Память",
+        "Nihility": "Небытие",
         "Abundance": "Изобилие",
-        "Hunting": "Охота",
+        "The Hunt": "Охота",
         "Destruction": "Разрушение",
-        "Joy": "Радость",
-        "Spreading": "Распространение",
+        "Elation": "Радость",
+        "Propagation": "Распространение",
         "Erudition": "Эрудиция",
+        "Harmony" : "Гармония",
         "Unknown": "Неизвестно",
         "Mythic": "Особые",
         "Legendary": "Золотые",
@@ -95,6 +97,30 @@
         "Skill_Levels_(1_12)": "Уровень навыков (1-12):",
         "Lineup_&_Properties": "Lineup & Properties",
         "Search": "Поиск:"
+    },
+    "banner_editor": {
+    "add_banner": "Добавить баннер",
+    "delete_banner": "Удалить баннер",
+    "gacha_type": "Тип баннера (gachaType)",
+    "gacha_id": "Номер баннера (последние 3 цифры)",
+    "begin_time": "Начало (YYYY-MM-DD HH:MM:SS)",
+    "end_time": "Окончание (YYYY-MM-DD HH:MM:SS)",
+    "open_file": "Открыть файл",
+    "save_file": "Сохранить",
+    "save_as": "Сохранить как...",
+    "update_banner": "Обновить баннер",
+    "no_item": "Нет элемента",
+    "error_title": "Ошибка",
+    "success_title": "Успех",
+    "save_success": "Файл успешно сохранен.",
+    "current_rate5": "Бонус 5★ (текущие)",
+    "current_rate4": "Бонус 4★ (текущие)",
+    "available_lightcones": "Доступные Лайтконы",
+    "available_avatars": "Доступные Аватары",
+    "add_to_rate5": "Add to Rate 5",
+    "add_to_rate4": "Add to Rate 4",
+    "no_banner_selected": "Баннер не выбран",
+    "no_item_selected": "Элемент не выбран"
     },
     "items_tab": {
         "Search": "Поиск",
@@ -186,7 +212,7 @@
             "Imaginary Damage": "Бонус Мнимого урона"
         }
     },
-    "commands_tab": {
+    "commands_tab_LC": {
         "Start_Commands": "Стартовые команды",
         "Base_Commands": "Базовые команды",
         "Custom_Commands": "Кастомные команды",
@@ -196,6 +222,29 @@
         "Delete": "Удалить",
         "Error": "Ошибка",
         "Warning": "Предупреждение"
+    },
+    "command_tab_DH": {
+    "tab_frequently": "Часто используемые команды",
+    "tab_custom": "Пользовательские команды",
+    "section_frequently": "Часто используемые команды",
+    "section_starter": "Стартовые команды",
+    "Name:": "Название:",
+    "Command:": "Команда:",
+    "Add Command:": "Добавить команду:",
+    "Rewrite": "Перезаписать",
+    "Delete": "Удалить",
+    "commands": {
+        "Unstuck": "Убрать зависание",
+        "reload_banner_config": "Перезагрузить конфиг баннера",
+        "All_avatars": "Выдать всех персонажей",
+        "All_equipment": "Выдать все световые конусы",
+        "Give_everything_else": "Выдать все остальное",
+        "unlock_all_missions": "Завершить все миссии",
+        "finish_all_tutorials": "Завершить все туториалы",
+        "unlock_SU": "Разблокировать виртуальную вселенную",
+        "Level 80": "Уровень освоения 80",
+        "Unlock_scene": "Разблокировать все свойства сцены"
+    }
     },
     "main": {
         "file_not_found_title": "Файл не найден",
@@ -216,6 +265,7 @@
         "tab_avatars": "Персонажи",
         "tab_commands": "Команды",
         "tab_rogue": "Раздичные баффы",
+        "tab_banner_editor": "Редактор баннеров",
         "tab_opencommand_plugin": "Плагин OpenCommand",
         "autocopy_label": "Автокопирование",
         "copy_button_label": "Копировать",
@@ -233,7 +283,9 @@
         "restart_required_title": "Требуется перезапуск",
         "restart_required_message": "Пожалуйста, перезапустите приложение, чтобы изменения вступили в силу.",
         "settings_menu": "Настройки",
-        "settings_button": "Настройки"
+        "settings_button": "Настройки",
+        "editors_menu": "Редакторы",
+        "banner_editor_menu": "Редактор баннеров"
     },
     "settings": {
         "settings_title": "Настройки",
