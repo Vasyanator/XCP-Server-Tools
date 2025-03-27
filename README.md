@@ -31,7 +31,8 @@ It requires a handbook, which can be found in the root folder of the LunarCore s
 ---
 
 # Screenshots
-![image](https://github.com/user-attachments/assets/f2480471-d3fa-4b34-be73-7e3480a9df84)
+![image](https://github.com/user-attachments/assets/0c527879-5989-4d29-abc6-27fcef096ca8)
+
 ![image](https://github.com/user-attachments/assets/a43a56a9-34e9-4531-af9e-b2c688cbe1de)
 ![image](https://github.com/user-attachments/assets/1eba7b27-ae5e-41b1-aee2-86363f47622d)
 ![image](https://github.com/user-attachments/assets/ec006742-e8cb-40de-bb3f-3de1128a022d)
